@@ -1,32 +1,34 @@
-const { transformFromAstSync } = require('@babel/core');
-const  parser = require('@babel/parser');
-const eqLintPlugin = require('./plugin/eq-lint');
+const { transformFromAstSync } = require("@babel/core");
+const parser = require("@babel/parser");
+const eqLintPlugin = require("./plugin/eq-lint");
+const fs = require("fs");
+const path = require("path");
 
-const sourceCode = `
-const four = /* foo */ add(2, 2);
+// 1. 读取源码
+const sourceCode = fs.readFileSync(
+  path.join(__dirname, `./source/${path.basename(__filename)}`),
+  {
+    encoding: "utf-8",
+  }
+);
 
-
-// a == b;
-// foo == true
-// bananas != 1;
-// value == undefined
-// typeof foo == 'undefined'
-// 'hello' != 'world'
-// 0 == 0
-// true == true
-`;
-
+// 2. parse 源码 -> ast
 const ast = parser.parse(sourceCode, {
-    sourceType: 'unambiguous',
-    comments: true
+  sourceType: "unambiguous",
+  comments: true,
 });
 
+// 3. 通过插件遍历 ast
 const { code } = transformFromAstSync(ast, sourceCode, {
-    plugins: [[eqLintPlugin, {
-        fix: true
-    }]],
-    comments: true
+  plugins: [
+    [
+      eqLintPlugin,
+      {
+        fix: true, // 是否自动修复代码
+      },
+    ],
+  ],
+  comments: true,
 });
 
 console.log(code);
-

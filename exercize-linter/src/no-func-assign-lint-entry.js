@@ -1,25 +1,24 @@
-const { transformFromAstSync } = require('@babel/core');
-const  parser = require('@babel/parser');
-const noFuncAssignLintPlugin = require('./plugin/no-func-assign-lint');
+const { transformFromAstSync } = require("@babel/core");
+const parser = require("@babel/parser");
+const noFuncAssignLintPlugin = require("./plugin/no-func-assign-lint");
+const fs = require("fs");
+const path = require("path");
 
-const sourceCode = `
-    function foo() {
-        foo = bar;
-    }
-
-    var a = function hello() {
-    hello = 123;
-    };
-`;
+// 1. 读取源码
+const sourceCode = fs.readFileSync(
+  path.join(__dirname, `./source/${path.basename(__filename)}`),
+  {
+    encoding: "utf-8",
+  }
+);
 
 const ast = parser.parse(sourceCode, {
-    sourceType: 'unambiguous'
+  sourceType: "unambiguous",
 });
 
 const { code } = transformFromAstSync(ast, sourceCode, {
-    plugins: [noFuncAssignLintPlugin],
-    filename: 'input.js'
+  plugins: [noFuncAssignLintPlugin],
+  filename: "input.js",
 });
 
-// console.log(code);
-
+console.log(code);

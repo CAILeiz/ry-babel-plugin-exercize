@@ -1,28 +1,26 @@
-const { transformFromAstSync } = require('@babel/core');
-const  parser = require('@babel/parser');
-const forDirectionLintPlugin = require('./plugin/for-direction-lint');
+const { transformFromAstSync } = require("@babel/core");
+const parser = require("@babel/parser");
+const forDirectionLintPlugin = require("./plugin/for-direction-lint");
 
-const sourceCode = `
-for (var i = 0; i < 10; i++) {
-}
+const fs = require("fs");
+const path = require("path");
 
-for (var i = 10; i >= 0; i--) {
-}
-for (var i = 0; i < 10; i--) {
-}
-
-for (var i = 10; i >= 0; i++) {
-}
-`;
+// 1. 读取源码
+const sourceCode = fs.readFileSync(
+  path.join(__dirname, `./source/${path.basename(__filename)}`),
+  {
+    encoding: "utf-8",
+  }
+);
 
 const ast = parser.parse(sourceCode, {
-    sourceType: 'unambiguous'
+  sourceType: "unambiguous",
 });
 
+// 2. 插件遍历 ast
 const { code } = transformFromAstSync(ast, sourceCode, {
-    plugins: [forDirectionLintPlugin],
-    filename: 'input.js'
+  plugins: [forDirectionLintPlugin],
+  filename: "input.js",
 });
 
-// console.log(code);
-
+console.log(code);
