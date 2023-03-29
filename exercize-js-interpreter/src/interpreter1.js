@@ -76,13 +76,13 @@ const evaluator = (function () {
     },
     // console.log 的类型是 MemberExpression
     MemberExpression(node, scope) {
-      const obj = scope.get(evaluate(node.object));
+      const obj = scope.get(evaluate(node.object)); // scope中全局定义的, console 函数
       // 给变量名赋值 值
-      return obj[evaluate(node.property)];
+      return obj[evaluate(node.property)]; // 获取 log 函数
     },
     // 解释 console.log(xxx)
     CallExpression(node, scope) {
-      const fn = evaluate(node.callee, scope); // 获取 .log 函数, log: fn
+      const fn = evaluate(node.callee, scope); // 获取 .log 函数, log: fn, node.callee.type 为 MemberExpression
       // 获取参数变量
       const args = node.arguments.map((item) => {
         if (item.type === "Identifier") {

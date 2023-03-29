@@ -1,3 +1,4 @@
+// ast链接: https://astexplorer.net/#/gist/97e603a42d899cc9e8fe7becf608ac6b/96228ddba1a99f3ab46970f78df22f104b465e70
 const parser = require("@babel/parser");
 const { codeFrameColumns } = require("@babel/code-frame");
 const chalk = require("chalk");
@@ -83,19 +84,21 @@ const evaluator = (function () {
       } else {
         scope.set(declareName, function (...args) {
           const funcScope = new Scope();
-          funcScope.parent = scope;
+          funcScope.parent = scope; // 设置父级作用域链
 
           node.params.forEach((item, index) => {
-            funcScope.set(item.name, args[index]);
+            funcScope.set(item.name, args[index]); // item.name 形参名称, args 实参
           });
           funcScope.set("this", this);
-          return evaluate(node.body, funcScope);
+          return evaluate(node.body, funcScope); // 本质找到 函数 BlockStatement 中的返回语句 ReturnStatement, 返回结果
         });
       }
     },
+    // 解释函数中的返回语句
     ReturnStatement(node, scope) {
       return evaluate(node.argument, scope);
     },
+    // 解释块级语句
     BlockStatement(node, scope) {
       for (let i = 0; i < node.body.length; i++) {
         if (node.body[i].type === "ReturnStatement") {
@@ -104,6 +107,7 @@ const evaluator = (function () {
         evaluate(node.body[i], scope);
       }
     },
+    // 解释函数执行
     CallExpression(node, scope) {
       const args = node.arguments.map((item) => {
         if (item.type === "Identifier") {
@@ -120,6 +124,7 @@ const evaluator = (function () {
         return fn.apply(null, args);
       }
     },
+    // 解释表达式语句
     BinaryExpression(node, scope) {
       const leftValue = getIdentifierValue(node.left, scope);
       const rightValue = getIdentifierValue(node.right, scope);
@@ -136,9 +141,11 @@ const evaluator = (function () {
           throw Error("upsupported operator：" + node.operator);
       }
     },
+    // 解释变量
     Identifier(node, scope) {
       return node.name;
     },
+    // 解释变量值
     NumericLiteral(node, scope) {
       return node.value;
     },
