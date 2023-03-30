@@ -13,6 +13,7 @@
 - [js 解释器](./exercize-js-interpreter/src)
 - [模块遍历器](./exercize-module-iterator/src)
 - [手写简易的 babel](./exercize-babel/src)
+- [babel macro](./exercize-babel-macro/src)
 
 ## 下载和运行
 
@@ -36,8 +37,5 @@ node ./exercize-linter/src/eq-lint-entry.js （或其他路径）
     "type": "node"
 }
 ```
+
 然后点击 debug 面板的运行按钮，打断点调试
-
-
-
-
